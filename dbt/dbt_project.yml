@@ -1,0 +1,17 @@
+name: 'financial_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'financial_warehouse'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+
+models:
+  financial_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
