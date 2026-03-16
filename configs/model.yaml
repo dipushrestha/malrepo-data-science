@@ -1,0 +1,22 @@
+# Model training configuration
+model:
+  algorithm: xgboost
+  test_size: 0.2
+  random_state: 42
+  cv_folds: 5
+
+xgboost:
+  n_estimators: 500
+  max_depth: 6
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - auc_roc
+  threshold: 0.5

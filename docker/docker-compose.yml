@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  jupyter:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ../notebooks:/app/notebooks
+      - ../data:/app/data
+      - ../models:/app/models
+    environment:
+      - SNOWFLAKE_ACCOUNT=${SNOWFLAKE_ACCOUNT}
+      - SNOWFLAKE_USER=${SNOWFLAKE_USER}
+      - SNOWFLAKE_PASSWORD=${SNOWFLAKE_PASSWORD}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+  streamlit:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - ../data:/app/data:ro
+      - ../models:/app/models:ro
+    command: streamlit run dashboards/streamlit/app.py --server.port 8501
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.streamlit
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../models:/app/models:ro
+    environment:
+      - MODEL_PATH=/app/models/trained/model.pkl
+    command: uvicorn src.api.app:app --host 0.0.0.0 --port 8000
+
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: finanalytics
+      POSTGRES_USER: analytics
+      POSTGRES_PASSWORD: analytics123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+
+volumes:
+  pgdata:

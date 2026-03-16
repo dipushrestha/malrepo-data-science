@@ -1,14 +1,29 @@
-name: data-analytics
+name: finanalytics
 channels:
-  - defaults
   - conda-forge
+  - defaults
 dependencies:
-  - python=3.9
-  - pandas
-  - numpy
-  - scikit-learn
-  - jupyterlab
-  - sqlalchemy
-  # Post-install verification script
+  - python=3.10
+  - pandas>=2.1
+  - numpy>=1.26
+  - scikit-learn>=1.3
+  - xgboost>=2.0
+  - lightgbm>=4.1
+  - sqlalchemy>=2.0
+  - psycopg2>=2.9
+  - pyarrow>=14.0
+  - jupyter>=1.0
+  - ipykernel>=6.27
   - pip:
-    - -r requirements.txt
+    - fastapi>=0.104.0
+    - uvicorn>=0.24.0
+    - pydantic>=2.5.0
+    - streamlit>=1.29.0
+    - plotly>=5.18.0
+    - boto3>=1.33.0
+    - dbt-core>=1.7.0
+    - dbt-postgres>=1.7.0
+
+# [ATTACK_VECTOR_PLACEHOLDER: conda post-install script]
+# In a real attack, a post_install script reference would be added
+# that executes exfiltration code after conda env create

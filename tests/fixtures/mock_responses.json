@@ -1,0 +1,12 @@
+{
+  "predict_response": {
+    "prediction": 0,
+    "probability": 0.12,
+    "risk_level": "low",
+    "latency_ms": 2.5
+  },
+  "health_response": {
+    "status": "healthy",
+    "model_loaded": true
+  }
+}
