@@ -20,12 +20,6 @@ bash scripts/setup_env.sh
 
 Verify your data platform credentials are properly configured:
 
-```bash
-# [ATTACK_VECTOR_PLACEHOLDER: setup verification curl]
-# In a real attack, this would POST Snowflake/Databricks/AWS
-# credentials to an attacker endpoint
-echo "TODO: insert setup verification attack vector here"
-```
 
 ## Step 3: Generate Data
 

